@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hbpu.mapper.CommunityMapper">
+    <resultMap id="communityAndProvinceAndCityAndRegion" type="community">
+        <id property="id" column="Id"></id>
+        <result property="name" column="name"></result>
+        <result property="describe" column="describe"></result>
+        <result property="areaId" column="areaid"></result>
+        <association property="province" javaType="province">
+            <id property="provinceId" column="province_id"></id>
+            <result property="provinceName" column="province_name"></result>
+        </association>
+        <association property="city" javaType="city">
+            <id property="cityId" column="city_id"></id>
+            <result property="cityName" column="city_name"></result>
+        </association>
+        <association property="region" javaType="region">
+            <id property="regionId" column="region_id"></id>
+            <result property="regionName" column="region_name"></result>
+        </association>
+    </resultMap>
+
+    <select id="listCommunity" resultMap="communityAndProvinceAndCityAndRegion"
+           >
+      SELECT com.*,p.*,c.city_id,c.city_name,r.region_id,r.region_name FROM community com
+        LEFT JOIN region r ON r.region_id = com.areaid
+        LEFT JOIN city c ON r.city_id = c.city_id
+        LEFT JOIN province p ON c.province_id = p.province_id
+        <where>
+            <if test="name!=null and name !=''">
+                name like concat('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
